@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Fire Inspection Bill Generator</title>
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background: #f9f9f9;
+        }
+
+        /* Header and Grid Selection Section */
+        .header-section,
+        .template-selection {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        /* Grid Layout for Template Selection */
+        .grid-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            margin-bottom: 30px;
+        }
+
+        /* Styling for Each Template Card */
+        .template-card {
+            width: 260px;
+            padding: 20px;
+            text-align: center;
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Gradient background effect on hover */
+        .template-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff7e5f, #feb47b);
+            z-index: 0;
+            transition: opacity 0.3s ease;
+            opacity: 0;
+            border-radius: 15px;
+        }
+
+        .template-card:hover::before {
+            opacity: 0.15;
+        }
+
+        /* Title and Text Styling */
+        .template-card h2 {
+            font-size: 22px;
+            color: #ee5566;
+            margin-bottom: 10px;
+            font-weight: bold;
+            position: relative;
+            z-index: 1;
+        }
+
+        .template-card p {
+            font-size: 16px;
+            color: #555;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Hover Effects */
+        .template-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Adding icon to each card */
+        .template-card-icon {
+            font-size: 40px;
+            color: #ff7e5f;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Input styling for header section */
+        .header-section input[type="text"] {
+            width: 60%;
+            padding: 10px;
+            font-size: 24px;
+            text-align: center;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .left-panel,
+        .right-panel {
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            background-color: white;
+        }
+
+        .left-panel {
+            background-color: #f5f5f5;
+            border-right: 2px solid #eee;
+            margin-bottom: 20px;
+            position: relative;
+            height: 100%;
+            max-height: 100vh;
+            overflow-y: auto;
+        }
+
+        .right-panel {
+            background-color: #fff;
+            margin-bottom: 20px;
+            min-height: 500px;
+            max-height: 100vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* Title styles */
+        h2,
+        h3 {
+            color: #444;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .bii {
+            color: #444;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 100px;
+        }
+
+        label {
+            font-weight: 500;
+            margin-bottom: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 8px;
+            background: #fdfdfd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        /* Form fields */
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        button {
+            padding: 12px 20px;
+            background-color: #ee5566;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #f5f5f5;
+        }
+
+        #searchBox {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .sticky-top {
+            position: sticky;
+            top: 0;
+            background-color: #f5f5f5;
+            z-index: 10;
+            padding-bottom: 10px;
+        }
+
+        .scrollable-questions {
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        /* Buttons for arrow and icons */
+        .arrow-btn {
+            border: none;
+            background-color: transparent;
+            font-size: 24px;
+            cursor: pointer;
+            color: #ee5566;
+            transition: transform 0.3s ease;
+            text-align: center;
+            margin: 0;
+        }
+
+        .arrow-btn:hover {
+            transform: scale(1.2);
+        }
+
+        /* Flex grid for table and form inputs */
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-wrapper input[type="text"] {
+            flex: 1;
+        }
+
+        .table-section {
+            display: none;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .icon-btn {
+            font-size: 18px;
+            cursor: pointer;
+            border: none;
+            background-color: transparent;
+            color: #007bff;
+        }
+
+        .icon-btn.remove {
+            color: #ff4d4d;
+        }
+
+        /* Panel layout styling */
+        .page-section {
+            display: flex;
+            gap: 20px;
+        }
+
+        .left-panel {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .right-panel {
+            flex: 2;
+            min-width: 600px;
+            position: relative;
+        }
+
+        .logo-box {
+            width: 150px;
+            height: 100px;
+            border: 2px dashed #ccc;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            text-align: center;
+            line-height: 100px;
+            color: #999;
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        img.uploaded-image {
+            width: 150px;
+            height: 100px;
+            object-fit: contain;
+            position: static;
+            display: block;
+        }
+
+        /* Dynamic form grid */
+        #generatedForm {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: flex-start;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Page Title and Template Selection Grid -->
+    <h1>Select a Fire Safety Template</h1>
+    <div class="grid-container">
+        <!-- Fire Inspection Template Card -->
+        <!-- Fire Inspection Template Card -->
+        <div class="template-card" onclick="selectTemplate('inspection')">
+            <div class="template-card-icon">🔥</div> <!-- Example icon for Fire Inspection -->
+            <h2>Fire Inspection Report</h2>
+            <p>A comprehensive report for fire safety inspections.</p>
+        </div>
+
+        <!-- Fire Risk Assessment Template Card -->
+        <div class="template-card" onclick="selectTemplate('riskAssessment')">
+            <div class="template-card-icon">⚠️</div> <!-- Example icon for Fire Risk Assessment -->
+            <h2>Fire Risk Assessment</h2>
+            <p>Detailed assessment for identifying fire risks.</p>
+        </div>
+
+    </div>
+    <button id="backButton" onclick="goBackToGrid()"
+        style="display:none; margin-bottom: 20px; padding: 10px 15px; background-color: #ee5566; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: 600;">←
+        Back</button>
+
+    <!-- Editable Header Section -->
+    <div class="header-section" id="formHeader" style="display:none;">
+
+        <input type="text" id="editableTitle" placeholder="Enter Bill Title Here" oninput="updateBillTitle()">
+    </div>
+
+    <div class="page-section" id="formPage" style="display:none;">
+        <!-- Left Panel: Question Selection -->
+        <div class="left-panel" id="leftPanel">
+            <!-- Sticky section: Search bar, add custom question, add table button -->
+            <div class="sticky-top">
+                <h2>Select Questions for Your Bill</h2>
+                <!-- Search bar for questions -->
+                <input type="text" id="searchBox" placeholder="Search questions..." onkeyup="filterQuestions()">
+
+                <!-- Add Custom Text Question -->
+                <div class="form-group">
+                    <h3>Add Custom Text Question</h3>
+                    <div class="input-wrapper">
+                        <input type="text" id="customQuestion" placeholder="Enter your custom text question">
+                        <button type="button" class="arrow-btn" onclick="addCustomQuestion()">→</button>
+                    </div>
+                </div>
+
+                <!-- Add Custom Radio Button Question -->
+                <div class="form-group">
+                    <h3>Add Custom Radio Question</h3>
+                    <div class="input-wrapper">
+                        <input type="text" id="customRadioQuestion" placeholder="Enter your custom radio question">
+                        <button type="button" class="arrow-btn" onclick="addCustomRadioQuestion()">→</button>
+                    </div>
+                </div>
+
+                <!-- Add Custom Dropdown Question -->
+                <div class="form-group">
+                    <h3>Add Custom Dropdown Question</h3>
+                    <div class="input-wrapper">
+                        <input type="text" id="customDropdownQuestion"
+                            placeholder="Enter your custom dropdown question">
+                        <button type="button" class="arrow-btn" onclick="addCustomDropdownQuestion()">→</button>
+                    </div>
+                </div>
+
+                <!-- Add Custom Checkbox Group Question -->
+                <div class="form-group">
+                    <h3>Add Custom Checkbox Group</h3>
+                    <div class="input-wrapper">
+                        <input type="text" id="customCheckboxQuestion"
+                            placeholder="Enter your custom checkbox group question">
+                        <button type="button" class="arrow-btn" onclick="addCustomCheckboxGroup()">→</button>
+                    </div>
+                </div>
+
+                <!-- Add Table Button -->
+                <div class="form-group">
+                    <button type="button" class="arrow-btn" onclick="addTable()">Add Table</button>
+                </div>
+            </div>
+
+            <!-- Scrollable question list -->
+            <div class="scrollable-questions" id="questionsList">
+                <!-- General Information -->
+                <div class="form-group">
+                    <h3>General Information</h3>
+                    <label>
+                        <input type="checkbox" name="questions" value="Date of Inspection"
+                            onchange="addSelectedQuestion(this)">
+                        Date of Inspection
+                    </label>
+                    <label>
+                        <input type="checkbox" name="questions" value="Inspector's Name"
+                            onchange="addSelectedQuestion(this)">
+                        Inspector's Name
+                    </label>
+                    <label>
+                        <input type="checkbox" name="questions" value="Location/Building Address"
+                            onchange="addSelectedQuestion(this)">
+                        Location/Building Address
+                    </label>
+                    <label>
+                        <input type="checkbox" name="questions" value="Type of Building"
+                            onchange="addSelectedQuestion(this)">
+                        Type of Building
+                    </label>
+                    <label>
+                        <input type="checkbox" name="questions" value="Owner/Responsible Person"
+                            onchange="addSelectedQuestion(this)">
+                        Owner/Responsible Person
+                    </label>
+                    <label>
+                        <input type="checkbox" name="questions" value="Contact Details"
+                            onchange="addSelectedQuestion(this)">
+                        Contact Details
+                    </label>
+                    <label>
+                        <input type="checkbox" name="questions" value="Building Use"
+                            onchange="addSelectedQuestion(this)">
+                        Building Use
+                    </label>
+                    <label>
+                        <input type="checkbox" name="questions" value="Inspection Number"
+                            onchange="addSelectedQuestion(this)" checked>
+                        Inspection Number
+                    </label>
+                </div>
+
+                <!-- Fire Safety Equipment -->
+                <div class="form-group">
+                    <h3>Fire Safety Equipment</h3>
+                    <label>
+                        <input type="checkbox" name="questions"
+                            value="Are fire extinguishers available in sufficient numbers?"
+                            onchange="addSelectedQuestion(this)">
+                        Are fire extinguishers available in sufficient numbers?
+                    </label>
+                    <label>
+                        <input type="checkbox" name="questions"
+                            value="Are all fire extinguishers properly maintained and inspected within the last 12 months?"
+                            onchange="addSelectedQuestion(this)">
+                        Are all fire extinguishers properly maintained and inspected within the last 12 months?
+                    </label>
+                    <label>
+                        <input type="checkbox" name="questions" value="Are fire alarms in working condition?"
+                            onchange="addSelectedQuestion(this)">
+                        Are fire alarms in working condition?
+                    </label>
+                    <label>
+                        <input type="checkbox" name="questions" value="Are smoke detectors functional?"
+                            onchange="addSelectedQuestion(this)">
+                        Are smoke detectors functional?
+                    </label>
+                    <label>
+                        <input type="checkbox" name="questions" value="Are emergency lighting systems operational?"
+                            onchange="addSelectedQuestion(this)">
+                        Are emergency lighting systems operational?
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel: Generated Form -->
+        <div class="right-panel" id="formContainer">
+            <h2 id="billTitle" class="bii">Fire Inspection Bill</h2> <!-- Editable bill title -->
+
+            <!-- Logo Upload Box inside the form section -->
+            <div class="logo-box" id="logoBox" onclick="uploadLogo()">Click to add Logo</div>
+
+            <div id="generatedForm">
+                <!-- The dynamic form will appear here -->
+            </div>
+
+            <!-- Table section (hidden initially) -->
+            <div class="table-section" id="tableSection">
+                <h3>Customizable Table</h3>
+                <button class="icon-btn remove" onclick="removeTable()">-</button>
+                <table id="customTable">
+                    <thead>
+                        <tr>
+                            <th>Column 1</th>
+                            <th>Column 2</th>
+                            <th>Column 3</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" placeholder="Enter value"></td>
+                            <td><input type="text" placeholder="Enter value"></td>
+                            <td><input type="text" placeholder="Enter value"></td>
+                            <td>
+                                <button class="icon-btn" onclick="addRow()">+</button>
+                                <button class="icon-btn remove" onclick="removeRow(this)">-</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button class="icon-btn" onclick="addColumn()">+ Add Column</button>
+            </div>
+
+            <button type="button" onclick="saveAsImage()">Download Bill as Image</button>
+        </div>
+
+        <!-- Script Imports -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+        <script>
+            /* Define default questions for each template */
+            const templates = {
+                inspection: ["Date of Inspection", "Inspector's Name", "Are fire extinguishers available in sufficient numbers?", "Are fire alarms in working condition?"],
+                riskAssessment: ["Date of Inspection", "Location/Building Address", "Type of Building", "Are fire extinguishers available in sufficient numbers?"]
+            };
+            let manualQuestions = [];
+            let addedQuestions = [];
+            let addedQuestionsOrder = [];
+            let draggedItem = null;
+            const MAX_OPTIONS = 5; // Maximum number of options for radio/checkbox questions
+
+            // Update the bill title dynamically and restrict it to 6 words and 35 characters
+            function updateBillTitle() {
+                const titleInput = document.getElementById('editableTitle');
+                let title = titleInput.value.trim();
+                if (title.split(" ").length > 6 || title.length > 35) {
+                    titleInput.value = title.substring(0, 35).split(" ").slice(0, 6).join(" ");
+                    title = titleInput.value;
+                }
+                document.getElementById('billTitle').innerText = title || 'Fire Inspection Bill';
+            }
+
+            // Functions for adding/removing rows and columns in the custom table
+            function addTable() {
+                document.getElementById('tableSection').style.display = 'block';
+            }
+
+            function addRow() {
+                const table = document.getElementById('customTable').getElementsByTagName('tbody')[0];
+                const columns = table.rows[0] ? table.rows[0].cells.length - 1 : 3;
+                const newRow = table.insertRow();
+                for (let i = 0; i < columns; i++) {
+                    const newCell = newRow.insertCell(i);
+                    newCell.innerHTML = '<input type="text" placeholder="Enter value">';
+                }
+                const removeCell = newRow.insertCell(columns);
+                removeCell.innerHTML = '<button class="icon-btn remove" onclick="removeRow(this)">-</button>';
+            }
+
+            function addColumn() {
+                const table = document.getElementById('customTable');
+                const rows = table.rows;
+                for (let i = 0; i < rows.length; i++) {
+                    const newCell = rows[i].insertCell(rows[i].cells.length - 1);
+                    newCell.innerHTML = '<input type="text" placeholder="Enter value">';
+                }
+            }
+
+            function removeRow(button) {
+                const row = button.closest('tr');
+                row.remove();
+                const table = document.getElementById('customTable').getElementsByTagName('tbody')[0];
+                if (table.rows.length === 0) {
+                    addRow();
+                }
+            }
+
+            /* Function to handle template selection */
+            function selectTemplate(templateType) {
+                document.querySelector(".grid-container").style.display = "none";
+                document.getElementById("formPage").style.display = "flex";
+                document.getElementById("formHeader").style.display = "block";
+                document.getElementById("backButton").style.display = "inline-block"; // Show Back button
+                const selectedQuestions = templates[templateType];
+                document.getElementById("generatedForm").innerHTML = "";
+                selectedQuestions.forEach(question => {
+                    document.querySelector(`input[value="${question}"]`).checked = true;
+                    addSelectedQuestion({ checked: true, value: question });
+                });
+                updateBillTitle();
+            }
+            function removeTable() {
+                document.getElementById('tableSection').style.display = 'none';
+            }
+            function goBackToGrid() {
+                document.getElementById("formPage").style.display = "none";
+                document.getElementById("formHeader").style.display = "none";
+                document.querySelector(".grid-container").style.display = "flex";
+                document.getElementById("backButton").style.display = "none"; // Hide Back button
+            }
+
+            // Add selected question from the question list to the form
+            function addSelectedQuestion(checkbox) {
+                const questionText = checkbox.value;
+                const formContainer = document.getElementById('generatedForm');
+
+                if (checkbox.checked && !addedQuestions.includes(questionText)) {
+                    addedQuestions.push(questionText);
+                    const formGroup = createQuestionGroup(questionText);
+                    formContainer.appendChild(formGroup);
+                } else if (!checkbox.checked && addedQuestions.includes(questionText)) {
+                    removeQuestionFromForm(questionText);
+                }
+            }
+
+            function removeQuestionFromForm(questionText) {
+                const formContainer = document.getElementById('generatedForm');
+                const formGroups = formContainer.querySelectorAll('.form-group');
+                formGroups.forEach(group => {
+                    const label = group.querySelector('label');
+                    if (label && label.textContent === questionText) {
+                        formContainer.removeChild(group);
+                        addedQuestions = addedQuestions.filter(q => q !== questionText);
+                    }
+                });
+            }
+
+            // Add custom question to the form
+            function addCustomQuestion() {
+                const customQuestion = document.getElementById('customQuestion').value.trim();
+                if (customQuestion && !manualQuestions.includes(customQuestion)) {
+                    manualQuestions.push(customQuestion);
+                    const formGroup = createQuestionGroup(customQuestion, true);
+                    document.getElementById('generatedForm').appendChild(formGroup);
+                    document.getElementById('customQuestion').value = ''; // Clear input field
+                    addDragAndDropHandlers();
+                }
+            }
+            function createQuestionGroup(question, isManual = false) {
+                const formGroup = document.createElement('div');
+                formGroup.className = 'form-group';
+                formGroup.draggable = true;
+                formGroup.dataset.question = question;
+                formGroup.addEventListener('dragstart', drag);
+                formGroup.addEventListener('dragover', dragOver);
+                formGroup.addEventListener('drop', drop);
+
+                const label = document.createElement('label');
+                label.textContent = question;
+                formGroup.appendChild(label);
+
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.name = question;
+                input.placeholder = 'Enter details here';
+                formGroup.appendChild(input);
+
+                if (isManual) {
+                    const removeBtn = document.createElement('button');
+                    removeBtn.className = 'remove-btn';
+                    removeBtn.textContent = '-';
+                    removeBtn.onclick = () => removeQuestion(removeBtn);
+                    formGroup.appendChild(removeBtn);
+                }
+
+                return formGroup;
+            }
+            function addCustomRadioQuestion() {
+                const customRadioQuestion = document.getElementById('customRadioQuestion').value.trim();
+                if (customRadioQuestion) {
+                    const radioOptions = prompt("Enter up to 5 radio options separated by commas (e.g., Yes,No):");
+                    if (radioOptions) {
+                        const options = radioOptions.split(",").map(option => option.trim()).slice(0, MAX_OPTIONS);
+                        const questionHtml = createRadioQuestionHtml(customRadioQuestion, options, true);
+                        manualQuestions.push(customRadioQuestion);
+                        document.getElementById('generatedForm').insertAdjacentHTML('beforeend', questionHtml);
+                        document.getElementById('customRadioQuestion').value = '';
+                        addDragAndDropHandlers();
+                    }
+                }
+            }
+
+            function createRadioQuestionHtml(question, options, isManual = false) {
+                const radioHtml = options.map(option => `<label><input type="radio" name="${question}" value="${option}"> ${option}</label>`).join(' ');
+                const removeBtnHtml = isManual ? `<button class="remove-btn" onclick="removeQuestion(this)">-</button>` : '';
+                return `<div class="form-group" draggable="true" data-question="${question}" ondragstart="drag(event)" ondragover="dragOver(event)" ondrop="drop(event)">
+        <label>${question}</label>
+        <div class="radio-group" style="display: flex; flex-direction: row; gap: 10px;">${radioHtml}</div>
+        ${removeBtnHtml}
+        </div>`;
+            }
+
+            // Add custom checkbox group question with options
+            function addCustomCheckboxGroup() {
+                const customCheckboxQuestion = document.getElementById('customCheckboxQuestion').value.trim();
+                if (customCheckboxQuestion) {
+                    const checkboxOptions = prompt("Enter up to 5 checkbox options separated by commas (e.g., Option1,Option2):");
+                    if (checkboxOptions) {
+                        const options = checkboxOptions.split(",").map(option => option.trim()).slice(0, MAX_OPTIONS);
+                        const questionHtml = createCheckboxQuestionHtml(customCheckboxQuestion, options, true);
+                        manualQuestions.push(customCheckboxQuestion);
+                        document.getElementById('generatedForm').insertAdjacentHTML('beforeend', questionHtml);
+                        document.getElementById('customCheckboxQuestion').value = '';
+                        addDragAndDropHandlers();
+                    }
+                }
+            }
+
+            /* Function to dynamically update the bill title */
+            function updateBillTitle() {
+                const titleInput = document.getElementById('editableTitle').value;
+                document.getElementById('billTitle').innerText = titleInput || 'Fire Inspection Bill';
+            }
+
+            /* Function to add/remove questions to/from the report form */
+            function addSelectedQuestion(checkbox) {
+                const formContainer = document.getElementById('generatedForm');
+                if (checkbox.checked) {
+                    const questionGroup = document.createElement("div");
+                    questionGroup.className = "form-group";
+                    questionGroup.innerHTML = `<label>${checkbox.value}</label><input type="text" placeholder="Enter details here">`;
+                    formContainer.appendChild(questionGroup);
+                } else {
+                    Array.from(formContainer.children).forEach(child => {
+                        if (child.innerText.includes(checkbox.value)) child.remove();
+                    });
+                }
+            }
+            function createCheckboxQuestionHtml(question, options, isManual = false) {
+                const checkboxHtml = options.map(option => `<label><input type="checkbox" name="${question}" value="${option}"> ${option}</label>`).join(' ');
+                const removeBtnHtml = isManual ? `<button class="remove-btn" onclick="removeQuestion(this)">-</button>` : '';
+                return `<div class="form-group" draggable="true" data-question="${question}" ondragstart="drag(event)" ondragover="dragOver(event)" ondrop="drop(event)">
+        <label>${question}</label>
+        <div class="checkbox-group" style="display: flex; flex-direction: row; gap: 10px;">${checkboxHtml}</div>
+        ${removeBtnHtml}
+        </div>`;
+            }
+            function addCustomDropdownQuestion() {
+                const customDropdownQuestion = document.getElementById('customDropdownQuestion').value.trim();
+                if (customDropdownQuestion) {
+                    const dropdownOptions = prompt("Enter the dropdown options separated by commas (e.g., Option1,Option2):");
+                    if (dropdownOptions) {
+                        const options = dropdownOptions.split(",").map(option => option.trim());
+                        const questionHtml = getDropdownQuestionHtml(customDropdownQuestion, options, true);
+                        document.getElementById('generatedForm').insertAdjacentHTML('beforeend', questionHtml);
+                        addDragAndDropHandlers(); // Re-initialize drag and drop handlers
+                        document.getElementById('customDropdownQuestion').value = ''; // Clear input
+                    }
+                }
+            }
+            function getDropdownQuestionHtml(question, options, isManual = false) {
+                let dropdownHtml = `<select name="${question}">`;
+                options.forEach(option => {
+                    dropdownHtml += `<option value="${option}">${option}</option>`;
+                });
+                dropdownHtml += `</select>`;
+                const removeBtnHtml = isManual ? `<button class="remove-btn" onclick="removeQuestion(this)">-</button>` : '';
+                return `<div class="form-group" draggable="true" data-question="${question}" ondragstart="drag(event)" ondragover="dragOver(event)" ondrop="drop(event)">
+                <label>${question}</label>
+                ${dropdownHtml}
+                ${removeBtnHtml}
+              </div>`;
+            }
+            function removeQuestion(button) {
+                const questionToRemove = button.closest('.form-group');
+                const questionLabel = questionToRemove.querySelector('label').innerText;
+                manualQuestions = manualQuestions.filter(question => question !== questionLabel);
+                addedQuestions = addedQuestions.filter(question => question !== questionLabel);
+                questionToRemove.remove();
+            }
+
+            // Drag and drop handlers
+            function drag(event) {
+                draggedItem = event.target.closest('.form-group');
+                if (draggedItem) setTimeout(() => draggedItem.style.display = 'none', 0);
+            }
+
+            function dragOver(event) {
+                event.preventDefault();
+            }
+
+            function drop(event) {
+                event.preventDefault();
+                const dropTarget = event.target.closest('.form-group');
+                if (dropTarget && draggedItem && dropTarget.closest("#generatedForm")) {
+                    dropTarget.parentNode.insertBefore(draggedItem, dropTarget.nextSibling);
+                }
+                if (draggedItem) draggedItem.style.display = 'block';
+                draggedItem = null;
+            }
+            // Search functionality for questions
+            function filterQuestions() {
+                const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+                const questions = document.querySelectorAll('#questionsList label');
+                questions.forEach(question => {
+                    question.style.display = question.textContent.toLowerCase().includes(searchTerm) ? '' : 'none';
+                });
+            }
+
+            /* Function to handle logo upload */
+            function uploadLogo() {
+                const logoInput = document.createElement('input');
+                logoInput.type = 'file';
+                logoInput.accept = 'image/*';
+                logoInput.onchange = (event) => {
+                    const file = event.target.files[0];
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.classList.add('uploaded-image');
+                        document.getElementById('logoBox').innerHTML = '';
+                        document.getElementById('logoBox').appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                };
+                logoInput.click();
+            }
+
+            // Function to save the form container as an image
+            function saveAsImage() {
+                const container = document.getElementById('formContainer');
+                const buttons = container.querySelectorAll('button'); // Select all buttons inside the container
+
+                // Temporarily hide all buttons
+                buttons.forEach(button => {
+                    button.style.display = 'none';
+                });
+
+                // Temporarily adjust styles to capture full content
+                const originalMaxHeight = container.style.maxHeight;
+                const originalOverflowY = container.style.overflowY;
+
+                container.style.maxHeight = 'none';
+                container.style.overflowY = 'visible';
+
+                html2canvas(container, {
+                    scrollY: 0,            // Start capturing from the top of the container
+                    scale: 2,              // Adjust scale for higher resolution (optional)
+                    useCORS: true          // Handle cross-origin images
+                }).then(canvas => {
+                    // Restore the original styles
+                    container.style.maxHeight = originalMaxHeight;
+                    container.style.overflowY = originalOverflowY;
+
+                    // Restore the visibility of all buttons
+                    buttons.forEach(button => {
+                        button.style.display = '';
+                    });
+
+                    // Create a download link for the captured image
+                    const dataUrl = canvas.toDataURL('image/png');
+                    const link = document.createElement('a');
+                    link.download = 'Fire_Inspection_Bill.png';
+                    link.href = dataUrl;
+                    link.click();
+                }).catch(error => {
+                    // Restore the original styles and button visibility in case of error
+                    container.style.maxHeight = originalMaxHeight;
+                    container.style.overflowY = originalOverflowY;
+                    buttons.forEach(button => {
+                        button.style.display = '';
+                    });
+                    console.error('Error capturing image:', error);
+                });
+            }
+            // Initialize drag and drop and title update on load
+            document.addEventListener('DOMContentLoaded', () => {
+                addDragAndDropHandlers();
+                updateBillTitle();
+            });
+
+            function addDragAndDropHandlers() {
+                const draggableItems = document.querySelectorAll('.form-group');
+                draggableItems.forEach(item => {
+                    item.addEventListener('dragstart', drag);
+                    item.addEventListener('dragover', dragOver);
+                    item.addEventListener('drop', drop);
+                });
+            }
+        </script>
+
+</body>
+
+</html>
